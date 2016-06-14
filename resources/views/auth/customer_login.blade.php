@@ -20,7 +20,7 @@
                     <div class="col-md-8 col-md-offset-2">
                         <div class="alert alert-success alert-dismissable">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                            <i class="fa fa-envelope-o" aria-hidden="true"></i> {{ Session::get('success') }}
+                            <i class="fa fa-check" aria-hidden="true"></i> {{ Session::get('success') }}
                         </div>
                     </div>
                 </div>

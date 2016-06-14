@@ -18,7 +18,7 @@ class CustomerApiUsesController extends Controller
      */
     public function getCustomerId($api_key)
     {
-        $customer_id = CustomerApiModel::all()->where('api_key', $api_key);
+        $customer_id = CustomerApiModel::where('api_key', $api_key)->get();
         $id = null;
         foreach($customer_id as $row) {
             $id = $row->customerid;
@@ -29,7 +29,7 @@ class CustomerApiUsesController extends Controller
     /**
      * @param $api_key | Expect API key
      * @param $website_address | Expect API uses website address
-     * @return void
+     * @return new website address or update website address if exist and count it how many times it uses
      */
     public function getApiUsesWebsiteInfo($api_key, $website_address)
     {
@@ -41,7 +41,7 @@ class CustomerApiUsesController extends Controller
                 'customerid'   => $customer_id
             ));
         } else {
-            $update = CustomerApiUsesModel::all()->where('uses_address', $website_address);
+            $update = CustomerApiUsesModel::where('uses_address', $website_address)->where('customerid', $customer_id)->get();
             foreach($update as $update) {
                 $update->api_uses_count += 1;
                 $update->save();
@@ -54,11 +54,11 @@ class CustomerApiUsesController extends Controller
     /**
      * @param $website_address | Expect API uses web address
      * @param $customer_id | Expect Customer id of API key
-     * @return bool
+     * @return check the website address exist or not of the particular customer
      */
     public function checkRowOfUsesAddress($website_address, $customer_id)
     {
-        $check = CustomerApiUsesModel::all()->where('uses_address', $website_address)->where('customerid', $customer_id);
+        $check = CustomerApiUsesModel::where('uses_address', $website_address)->where('customerid', $customer_id)->get();
         if(count($check) == 0) {
             return true;
         } else {

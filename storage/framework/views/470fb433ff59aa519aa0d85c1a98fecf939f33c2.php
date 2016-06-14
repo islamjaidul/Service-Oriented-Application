@@ -1,6 +1,7 @@
  <!--Customer Inbox Read Div Start (Live means how many days customer account will be activated)-->
     <div class="modal fade" id="confirm-read-inbox">
         <div class="modal-dialog">
+            <div ng-show="loading">Loading ...</div>
             <div ng-repeat="data in inboxReadData" class="modal-content">
                 <div class="modal-header">
                     <button type="button" ng-click="reload()" class="close" data-dismiss="modal" aria-hidden="false">&times;</button>

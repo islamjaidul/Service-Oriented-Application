@@ -7,9 +7,9 @@
         <ul class="sidebar-menu">
             <li class="header">HEADER</li>
             <?php
-                $nav = array('Dashboard', 'API Panel', 'Token Manager', 'Mailbox', 'Report', 'Documentation');
-                $url = array('/customer/dashboard', '/customer/api', '/customer/token', '/customer/mailbox', '/customer/report', '/customer/documentation');
-                $icon = array('fa fa-tachometer', 'fa fa-code', 'fa fa-briefcase', 'fa fa-envelope', 'fa fa-bar-chart', 'fa fa-book');
+                $nav = array('Dashboard', 'API Panel', 'Token Manager', 'Mailbox', 'Report');
+                $url = array('/customer/dashboard', '/customer/api', '/customer/token', '/customer/mailbox', '/customer/report');
+                $icon = array('fa fa-tachometer', 'fa fa-code', 'fa fa-briefcase', 'fa fa-envelope', 'fa fa-bar-chart');
             ?>
 
              @for($i = 0; $i < count($nav); $i++)

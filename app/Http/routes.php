@@ -58,25 +58,21 @@ Route::group(['middleware' => 'customer'], function() {
     Route::get('/customer/report/export', 'Customer\CustomerReportController@getCustomerReportExport');
     //Customer Report Route End
 
-    //Customer Documentation Start
-    Route::get('/customer/documentation', 'Customer\CustomerDocumentationController@getDocumentation');
-    //Customer Documentation End
-
 });
 
 //Customer Authentication Start
 Route::get('customer/register', 'Customer\CustomerController@getRegister');
 Route::group(['middleware' => 'Illuminate\Foundation\Http\Middleware\VerifyCsrfToken'], function() {
     Route::post('customer/register', 'Customer\CustomerController@postRegister');
+    Route::post('customer/login',  'Customer\CustomerController@postLogin');
+    Route::post('customer/register/activation/', 'Customer\CustomerController@postActivation');
 });
-Route::get('customer/register/activation/{id}', 'Customer\CustomerController@getActivation');
+Route::get('customer/register/activation/', 'Customer\CustomerController@getActivation');
 Route::get('customer/login', 'Customer\CustomerController@getLogin');
-Route::post('customer/login',  'Customer\CustomerController@postLogin');
 Route::get('customer/logout', 'Customer\CustomerController@getLogout');
 //Customer Authentication End
 
 //Api Route Start
-Route::get('api/file/get/{name}/{type}', 'API\RestApiController@getFile');
 Route::post('api/csv', 'API\RestApiController@postCsvApi');
 Route::post('api/docx', 'API\RestApiController@postDocxApi');
 Route::post('api/pdf', 'API\RestApiController@postPdfApi');

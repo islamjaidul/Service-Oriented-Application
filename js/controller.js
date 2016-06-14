@@ -46,26 +46,33 @@ namespace.controller("MyController", function($scope, $http, $log){
      * @return getData
      */
     $scope.newToken = function($params) {
-         $http.post('token/generate', {new_token: $params.requested_token, customer_id: $params.customerID})
+        $http.post('token/generate', {new_token: $params.requested_token, customer_id: $params.customerID})
             .success(function(data){
-                 $scope.myTokenForm.$setPristine();
-                 $scope.myTokenForm.$setUntouched();
-                 $params.requested_token = '';
-                 //When Customer request for new token then it will be under pending for approval.
-                 //That's why notApproval is true
-                 $scope.notApproved = true;
+                $scope.myTokenForm.$setPristine();
+                $scope.myTokenForm.$setUntouched();
+                $params.requested_token = '';
+                //When Customer request for new token then it will be under pending for approval.
+                //Thats why notApproval is true
+                $scope.notApproved = true;
             })
     };
 
     /**
      * @check the remaining token in database, if 0 then button will visible else not visible
      */
+    $scope.loading = true;
     $http.get('token/remaining')
         .success(function(data) {
             if(data == 0) {
                 $scope.remainingToken = 0;
-            } else {
+                $scope.loading = false;
+            } else if(data == 'no record') {
+                $scope.remainingToken = 'no record';    //There are not API generated and no token record
+                $scope.loading = false;
+            }
+            else {
                 $scope.remainingToken = data;
+                $scope.loading = false;
             }
         });
 
@@ -73,18 +80,22 @@ namespace.controller("MyController", function($scope, $http, $log){
     /**
      * @return the total customer mailbox information from database
      */
+    $scope.loading = true;
     $http.get('mailbox/inbox')
         .success(function(data){
             $scope.inboxData = data;
+            $scope.loading = false;
         });
 
     /**
      * @param id | Expect Id of all mail
      */
     $scope.readMessage = function(id) {
+        $scope.loading = true;
         $http.post('mailbox/inbox/single', {id: id})
             .success(function(data){
                 $scope.inboxReadData = data;
+                $scope.loading = false;
             })
     };
 
@@ -102,6 +113,7 @@ namespace.controller("MyController", function($scope, $http, $log){
     $scope.reload = function() {
         $http.get('mailbox/inbox')
             .success(function(data){
+                $scope.inboxReadData = '';
                 $scope.inboxData = data;
             });
 

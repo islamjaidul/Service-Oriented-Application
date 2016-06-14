@@ -26,7 +26,7 @@ class CustomerController extends Controller
     public function sendMail($to, $subject, $msg)
     {
        $headerFields = array(
-        "From: KP System <noreply@kpsystem.se>",
+        "From: Jaidulit - Codeboost <jaidul26@gmail.com>",
         "MIME-Version: 1.0",
         "Content-Type: text/html;charset=utf-8"
        );
@@ -34,6 +34,10 @@ class CustomerController extends Controller
     }
 
 
+    /**
+     * @param Requests\CustomerRegisterRequest $request
+     * @return customer registration
+     */
     public function postRegister(Requests\CustomerRegisterRequest $request)
     {
        $token = str_random(60);
@@ -50,17 +54,34 @@ class CustomerController extends Controller
            $data['name'] = $request->input('name');
            $data['token'] = $token;
            $msg = view('emails.verification', $data);
-           $this->sendMail($request->input('email'), 'Account Activation', $msg); 
-           return 'Mail has sent, please active your account';
+           $this->sendMail($request->input('email'), 'Account Activation', $msg);
+           return redirect('customer/register/activation')->with('success', 'Email has been sent with the token');
         }
     }
 
-    public function getActivation($token) {
+    /**
+     * @return Activation page
+     */
+    public function getActivation()
+    {
+        return view('auth.activation');
+    }
+
+    /**
+     * @param Request $request
+     * @return post activation
+     */
+    public function postActivation(Request $request)
+    {
+        $token = $request->input('token');
         $activation = DB::table('customer')
             ->where('activation_token', $token)
             ->update(['activation_token' => '', 'active' => 1]);
-        return "Your account has successfully activated. Please login";
-
+        if ($activation) {
+            return redirect('/customer/login')->with('success', "Your account has successfully activated. Please login");
+        } else {
+            return redirect('customer/register/activation')->with('invalid_msg', "Invalid token given");
+        }
     }
 
     /**

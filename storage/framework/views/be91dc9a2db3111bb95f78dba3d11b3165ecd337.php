@@ -5,7 +5,7 @@
         Anything you want
     </div>
     <!-- Default to the left -->
-    <strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved.
+    <strong><!--Copyright &copy; 2015 --><a href="#">Powered by Jaidulit</a></strong> <!--All rights reserved.-->
 </footer>
 
 <!-- Add the sidebar's background. This div must be placed

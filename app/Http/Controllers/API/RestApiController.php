@@ -15,25 +15,6 @@ class RestApiController extends Controller
 {
 
     /**
-     * @param $file_name | expect file name of the file
-     * @param $type | expect type of the file or extension of the file
-     * @return downloadable file
-     */
-    public function getFile($file_name = null, $type = null)
-    {
-        header('Content-Type: application/'.$type.'');
-        header('Content-Disposition: attachment; filename='.$file_name.'.'.$type.'');
-        header('Pragma: no-cache');
-        if($type == 'docx')
-            readfile("".asset('docx/'.$file_name.'.'.$type.'')."");
-        else if($type == 'csv')
-            readfile("".asset('csv/'.$file_name.'.'.$type.'')."");
-        else if($type == 'pdf')
-            readfile("".asset('pdf/'.$file_name.'.'.$type.'')."");
-        //unlink("".asset('csv/test.csv')."");
-    }
-
-    /**
      * @param array $data | expect the array value and check the availability
      * @return Validation true or false
      */
@@ -55,9 +36,19 @@ class RestApiController extends Controller
             echo '<h4 style="color:red">!! You must use "plain" as output during the type of "pdf"!!</h4>';
             $validate = false;
         }
-        //Checking the output should be table only with type of pdf
+        //Checking the output should not be table with type of pdf
         if($data['output'] == 'table' && $data['type'] == 'pdf') {
             echo '<h4 style="color:red">!! You cannot use "table" as output during the type of "pdf", you have to use plain as output!!</h4>';
+            $validate = false;
+        }
+        //Check the type and data, if the type is pdf and data is an array then throw an error
+        if($data['type'] == 'pdf' && $data['data'] == is_array($data['data'])) {
+            echo '<h4 style="color:red">!! You cannot use "array" as data during generating PDF, need to pass HTML !!</h4>';
+            $validate = false;
+        }
+        //Check the type and data, if the type is csv, docx and data is an html then throw an error
+        if($data['type'] == 'csv' && $data['data'] != is_array($data['data']) || $data['type'] == 'docx' && $data['data'] != is_array($data['data'])) {
+            echo '<h4 style="color:red">!! You cannot use "HTML" as data during generating CSV or DOCX, need to pass Array !!</h4>';
             $validate = false;
         }
         //Check the type for matching with availability
@@ -65,7 +56,7 @@ class RestApiController extends Controller
             echo '<h4 style="color:red">!! Invalid type value !!</h4>';
             $validate = false;
         }
-        //If there are no any api key
+        //If there are no any api key or mismatch
         if(count($customer_api) == 0) {
             echo '<h4 style="color:red">!! Invalid API key value !!</h4>';
             $validate = false;
@@ -73,7 +64,7 @@ class RestApiController extends Controller
         //Check the data is HTML tag or array
         if(!is_array($data['data'])) {
             if($data['data'] == strip_tags($data['data'])) {
-                echo '<h4 style="color:red">!! Invalid data value, value should be an array or HTML tag !!</h4>';
+                echo '<h4 style="color:red">!! Invalid data value, value should be an Array or HTML tag !!</h4>';
                 $validate = false;
             }
         }
@@ -100,10 +91,10 @@ class RestApiController extends Controller
             }
             return $remaining_token;
         } else {
-            //This i return because for validation
+            //This 1 return because for validation
             //If the API key is missing then in the validation it becomes false inside the validation
             //So when remaining token is available but token is mismatch then it return 1
-            //It means not show the validation error in line number 81 of the method of dataValidation
+            //It means not show the validation error in the method of dataValidation
             return 1;
         }
     }
@@ -144,7 +135,7 @@ class RestApiController extends Controller
             //API Token is reduce 1 per API request
             $this->customerCredential($fetch['key'], $fetch['actual_address']);
 
-            return 'Please download the CSV file <a href="'.url('api/file/get/'.$file_name.'/'.$type.'').'">Download</a>';
+            return 'Please download the CSV file <a href="'.url('csv/'.$file_name.'.'.$type.'').'" download>Download</a>';
         } else {
             return ' <h2 style="color:red">Access Denied</h2>';
         }
@@ -157,7 +148,7 @@ class RestApiController extends Controller
     public function postDocxApi()
     {
         //Data is fetching from API
-    	$fetch = json_decode(file_get_contents("php://input"), true);
+        $fetch = json_decode(file_get_contents("php://input"), true);
         if($this->dataValidation($fetch) != false) {
             $data = $fetch['data'];
             $file_name = $fetch['as'];
@@ -168,7 +159,7 @@ class RestApiController extends Controller
             //API key and API uses address send to customerCredential as parameter
             //API Token is reduce 1 per API request
             $this->customerCredential($fetch['key'], $fetch['actual_address']);
-            return 'Please download the DOCX file <a href="' . url('api/file/get/' . $file_name . '/' . $type . '') . '">Download</a>';
+            return 'Please download the DOCX file <a href="' . asset('docx/' . $file_name . '.' . $type . '') . '" download>Download</a>';
         } else {
             return ' <h2 style="color:red">Access Denied</h2>';
         }
@@ -191,24 +182,11 @@ class RestApiController extends Controller
             $pdf = \App::make('dompdf.wrapper');
             $pdf->loadHTML($data);
             file_put_contents("pdf/".$file_name.".pdf", $pdf->output());
-            return 'Please download the PDF file <a href="' . url('api/file/get/' . $file_name . '/' . $type . '') . '">Download</a>';
+            return 'Please download the PDF file <a href="' . asset('pdf/' . $file_name . '.' . $type . '') . '" download>Download</a>';
         } else {
             return ' <h2 style="color:red">Access Denied</h2>';
         }
 
-    }
-
-    /**
-     * @return showing PDF
-     */
-    public function showPdfApi($data = null)
-    {
-        $fpdf = new Fpdf();
-        $fpdf->AddPage();
-        $fpdf->SetFont('Arial','B',16);
-        $fpdf->Cell(40,10,'Hello World!');
-        $fpdf->Output();
-        exit;
     }
 
     /**

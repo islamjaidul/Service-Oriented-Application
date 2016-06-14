@@ -93,7 +93,9 @@ class CustomerTokenController extends Controller implements tokenTemplate
     {
     	$id = $this->getCustomerID();
         $data = CustomerApiModel::all();
-        $remaining_token = 0;
+        //If no any API generated then the $remaining_token = 'no record'
+        //It shows the the button disabled
+        $remaining_token = 'no record';
         foreach($data as $row) {
             if($row->customerid == $id) {
                 $remaining_token = $row->remaining_api_token;

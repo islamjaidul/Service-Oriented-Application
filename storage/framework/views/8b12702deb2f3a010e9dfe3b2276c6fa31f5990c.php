@@ -12,16 +12,22 @@
         <div class="row">
             <div class="box-body">
                 <div class="col-md-6">
-                    <a data-toggle="modal" data-target="#confirm-new-token" href="#"  ng-class="remainingToken==0 && notApproved != true ? 'btn btn-success btn-xs' : 'btn btn-success btn-xs disabled'">Add new token</a>
-                    <table class="table table-bordered">
-                        <tr><th>Total Token</th><th>Remaining Token</th></tr>
-                        <?php foreach($token as $row): ?>
-                            <tr>
-                                <td><?php echo e($row->api_token); ?></td>
-                                <td><?php echo e($row->remaining_api_token); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </table>
+                    <h4 style="text-align:center" ng-show="loading">Loading ...</h4>
+                    <div ng-if="remainingToken == 'no record'">
+                        <h4 style="color:red">API key not generated</h4>
+                    </div>
+                    <div ng-if="remainingToken != 'no record'">
+                        <a data-toggle="modal" data-target="#confirm-new-token" href="#"  ng-class="remainingToken==0 && notApproved != true ? 'btn btn-success btn-xs' : 'btn btn-success btn-xs disabled'">Add new token</a>
+                        <table class="table table-bordered">
+                            <tr><th>Total Token</th><th>Remaining Token</th></tr>
+                            <?php foreach($token as $row): ?>
+                                <tr>
+                                    <td><?php echo e($row->api_token); ?></td>
+                                    <td><?php echo e($row->remaining_api_token); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="col-md-6">
